@@ -3,66 +3,65 @@ using Microsoft.EntityFrameworkCore;
 using Templates_net6_0.WebApp.SqlDb.Data;
 using Templates_net6_0.WebApp.SqlDb.Models;
 
-namespace Templates_net6_0.WebApp.SqlDb.Pages.Courses
+namespace Templates_net6_0.WebApp.SqlDb.Pages.Courses;
+
+public class EditModel : DepartmentNamePageModel
 {
-    public class EditModel : DepartmentNamePageModel
+    private readonly MainContext _context;
+
+    public EditModel(MainContext context)
     {
-        private readonly MainContext _context;
+        _context = context;
+    }
 
-        public EditModel(MainContext context)
+    [BindProperty]
+    public Course Course { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(int? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        [BindProperty]
-        public Course Course { get; set; }
+        Course = await _context.Courses
+            .Include(c => c.Department).FirstOrDefaultAsync(m => m.CourseID == id);
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        if (Course == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Course = await _context.Courses
-                .Include(c => c.Department).FirstOrDefaultAsync(m => m.CourseID == id);
-
-            if (Course == null)
-            {
-                return NotFound();
-            }
-
-            // Select current DepartmentID.
-            PopulateDepartmentsDropDownList(_context, Course.DepartmentID);
-            return Page();
+            return NotFound();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        // Select current DepartmentID.
+        PopulateDepartmentsDropDownList(_context, Course.DepartmentID);
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPostAsync(int? id)
+    {
+        if (id == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var courseToUpdate = await _context.Courses.FindAsync(id);
-
-            if (courseToUpdate == null)
-            {
-                return NotFound();
-            }
-
-            if (await TryUpdateModelAsync<Course>(
-                 courseToUpdate,
-                 "course",   // Prefix for form value.
-                   c => c.Credits, c => c.DepartmentID, c => c.Title))
-            {
-                await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
-            }
-
-            // Select DepartmentID if TryUpdateModelAsync fails.
-            PopulateDepartmentsDropDownList(_context, courseToUpdate.DepartmentID);
-            return Page();
+            return NotFound();
         }
+
+        var courseToUpdate = await _context.Courses.FindAsync(id);
+
+        if (courseToUpdate == null)
+        {
+            return NotFound();
+        }
+
+        if (await TryUpdateModelAsync<Course>(
+                courseToUpdate,
+                "course",   // Prefix for form value.
+                c => c.Credits, c => c.DepartmentID, c => c.Title))
+        {
+            await _context.SaveChangesAsync();
+            return RedirectToPage("./Index");
+        }
+
+        // Select DepartmentID if TryUpdateModelAsync fails.
+        PopulateDepartmentsDropDownList(_context, courseToUpdate.DepartmentID);
+        return Page();
     }
 }

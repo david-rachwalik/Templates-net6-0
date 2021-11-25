@@ -1,40 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Templates_net6_0.WebApp.SqlDb.Data;
 using Templates_net6_0.WebApp.SqlDb.Models;
 
-namespace Templates_net6_0.WebApp.SqlDb.Pages.Movies
+namespace Templates_net6_0.WebApp.SqlDb.Pages.Movies;
+
+public class DetailsModel : PageModel
 {
-    public class DetailsModel : PageModel
+    private readonly MainContext _context;
+
+    public DetailsModel(MainContext context)
     {
-        private readonly MainContext _context;
+        _context = context;
+    }
 
-        public DetailsModel(MainContext context)
+    public Movie Movie { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(int? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        public Movie Movie { get; set; }
+        Movie = await _context.Movies.FirstOrDefaultAsync(m => m.ID == id);
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        if (Movie == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Movie = await _context.Movies.FirstOrDefaultAsync(m => m.ID == id);
-
-            if (Movie == null)
-            {
-                return NotFound();
-            }
-            return Page();
+            return NotFound();
         }
+        return Page();
     }
 }

@@ -4,36 +4,35 @@ using Microsoft.EntityFrameworkCore;
 using Templates_net6_0.WebApp.SqlDb.Data;
 using Templates_net6_0.WebApp.SqlDb.Models;
 
-namespace Templates_net6_0.WebApp.SqlDb.Pages.Courses
+namespace Templates_net6_0.WebApp.SqlDb.Pages.Courses;
+
+public class DetailsModel : PageModel
 {
-    public class DetailsModel : PageModel
+    private readonly MainContext _context;
+
+    public DetailsModel(MainContext context)
     {
-        private readonly MainContext _context;
+        _context = context;
+    }
 
-        public DetailsModel(MainContext context)
+    public Course Course { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(int? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        public Course Course { get; set; }
+        Course = await _context.Courses
+                .AsNoTracking()
+                .Include(c => c.Department)
+                .FirstOrDefaultAsync(m => m.CourseID == id);
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        if (Course == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Course = await _context.Courses
-                 .AsNoTracking()
-                 .Include(c => c.Department)
-                 .FirstOrDefaultAsync(m => m.CourseID == id);
-
-            if (Course == null)
-            {
-                return NotFound();
-            }
-            return Page();
+            return NotFound();
         }
+        return Page();
     }
 }

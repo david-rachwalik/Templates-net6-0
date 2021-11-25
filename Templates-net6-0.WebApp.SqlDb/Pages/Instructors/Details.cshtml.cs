@@ -4,33 +4,32 @@ using Microsoft.EntityFrameworkCore;
 using Templates_net6_0.WebApp.SqlDb.Data;
 using Templates_net6_0.WebApp.SqlDb.Models;
 
-namespace Templates_net6_0.WebApp.SqlDb.Pages.Instructors
+namespace Templates_net6_0.WebApp.SqlDb.Pages.Instructors;
+
+public class DetailsModel : PageModel
 {
-    public class DetailsModel : PageModel
+    private readonly MainContext _context;
+
+    public DetailsModel(MainContext context)
     {
-        private readonly MainContext _context;
+        _context = context;
+    }
 
-        public DetailsModel(MainContext context)
+    public Instructor Instructor { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(int? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        public Instructor Instructor { get; set; }
+        Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.ID == id);
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        if (Instructor == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.ID == id);
-
-            if (Instructor == null)
-            {
-                return NotFound();
-            }
-            return Page();
+            return NotFound();
         }
+        return Page();
     }
 }
