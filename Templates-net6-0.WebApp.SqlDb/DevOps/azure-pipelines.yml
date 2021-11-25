@@ -10,7 +10,7 @@ trigger:
   # https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/github#paths
   paths:
     include:
-    - Templates-net6-0.WebApp.Base
+    - Templates-net6-0.WebApp.SqlDb
 
 variables:
   tag: '$(Build.BuildId)'
