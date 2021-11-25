@@ -1,9 +1,8 @@
-﻿namespace Templates_net6_0.WebApp.SqlDb.Models.ViewModels
+﻿namespace Templates_net6_0.WebApp.SqlDb.Models.ViewModels;
+
+public class AssignedCourseData
 {
-    public class AssignedCourseData
-    {
-        public int CourseID { get; set; }
-        public string Title { get; set; }
-        public bool Assigned { get; set; }
-    }
+    public int CourseID { get; set; }
+    public string Title { get; set; }
+    public bool Assigned { get; set; }
 }
