@@ -22,7 +22,7 @@ public class CreateModel : PageModel
     }
 
     [BindProperty]
-    public Student Student { get; set; }
+    public StudentDTO Student { get; set; }
 
     //public async Task<IActionResult> OnPostAsync()
     //{
@@ -41,9 +41,6 @@ public class CreateModel : PageModel
     //    return Page();
     //}
 
-    [BindProperty]
-    public StudentVM StudentVM { get; set; }
-
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
@@ -52,7 +49,7 @@ public class CreateModel : PageModel
         }
 
         var entry = _context.Add(new Student());
-        entry.CurrentValues.SetValues(StudentVM);
+        entry.CurrentValues.SetValues(Student);
         await _context.SaveChangesAsync();
         return RedirectToPage("./Index");
     }
